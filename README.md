@@ -1,6 +1,6 @@
 # react-time-knob
 
-[jQuery Knob](https://github.com/aterrien/jQuery-Knob) rebuilt with React (no jQuery). This is an HTML5 Canvas-based component that serves as a circular range input. Accepts mouse, touch, scrollwheel, and keyboard input.
+[jQuery Knob](https://github.com/aterrien/jQuery-Knob) rebuilt with React (no jQuery). This is an HTML5 Canvas-based component that serves as a circular time display with three rings to display the hours, seconds, and minutes given in its props.
 
 ## Installation
 `npm install react-time-knob --save`
