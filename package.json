@@ -1,6 +1,6 @@
 {
   "name": "react-time-knob",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "HTML5 Canvas-based React knob/dial time display",
   "main": "index.js",
   "scripts": {
