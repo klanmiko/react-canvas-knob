@@ -3,19 +3,17 @@ import PropTypes from 'prop-types';
 
 class Knob extends React.Component {
   static propTypes = {
-    value: PropTypes.number.isRequired,
-    onChange: PropTypes.func.isRequired,
-    onChangeEnd: PropTypes.func,
-    min: PropTypes.number,
-    max: PropTypes.number,
-    step: PropTypes.number,
-    log: PropTypes.bool,
+    minutes: PropTypes.number.isRequired,
+    hours: PropTypes.number.isRequired,
+    seconds: PropTypes.number.isRequired,
     width: PropTypes.number,
     height: PropTypes.number,
     thickness: PropTypes.number,
     lineCap: PropTypes.oneOf(['butt', 'round']),
     bgColor: PropTypes.string,
-    fgColor: PropTypes.string,
+    mColor: PropTypes.string,
+    sColor: PropTypes.string,
+    hColor: PropTypes.string,
     inputColor: PropTypes.string,
     font: PropTypes.string,
     fontWeight: PropTypes.string,
@@ -25,42 +23,36 @@ class Knob extends React.Component {
       PropTypes.bool,
     ]),
     stopper: PropTypes.bool,
-    readOnly: PropTypes.bool,
-    disableTextInput: PropTypes.bool,
-    displayInput: PropTypes.bool,
     displayCustom: PropTypes.func,
+    displayNumber: PropTypes.bool.isRequired,
     angleArc: PropTypes.number,
     angleOffset: PropTypes.number,
-    disableMouseWheel: PropTypes.bool,
     title: PropTypes.string,
     className: PropTypes.string,
     canvasClassName: PropTypes.string,
   };
 
   static defaultProps = {
-    onChangeEnd: () => {},
-    min: 0,
-    max: 100,
-    step: 1,
-    log: false,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    thickness: 0.35,
     width: 200,
     height: 200,
-    thickness: 0.35,
     lineCap: 'butt',
     bgColor: '#EEE',
-    fgColor: '#EA2',
+    sColor: '#EA2',
+    mColor: '#EA2',
+    hColor: '#EA2',
     inputColor: '',
     font: 'Arial',
     fontWeight: 'bold',
     clockwise: true,
     cursor: false,
     stopper: true,
-    readOnly: false,
-    disableTextInput: false,
-    displayInput: true,
+    displayNumber: true,
     angleArc: 360,
     angleOffset: 0,
-    disableMouseWheel: false,
     className: null,
     canvasClassName: null,
   };
@@ -74,11 +66,7 @@ class Knob extends React.Component {
     this.angleOffset = this.props.angleOffset * Math.PI / 180;
     this.startAngle = (1.5 * Math.PI) + this.angleOffset;
     this.endAngle = (1.5 * Math.PI) + this.angleOffset + this.angleArc;
-    this.digits = Math.max(
-      String(Math.abs(this.props.min)).length,
-      String(Math.abs(this.props.max)).length,
-      2
-    ) + 2;
+    this.digits = 4;
   }
 
   componentDidMount() {
@@ -105,12 +93,10 @@ class Knob extends React.Component {
     this.canvasRef.removeEventListener('touchstart', this.handleTouchStart);
   }
 
-  getArcToValue = (v) => {
+  getArcToValue = (v, max) => {
     let startAngle;
     let endAngle;
-    const angle = !this.props.log
-    ? ((v - this.props.min) * this.angleArc) / (this.props.max - this.props.min)
-    : Math.log(Math.pow((v / this.props.min), this.angleArc)) / Math.log(this.props.max / this.props.min);
+    const angle = (v * this.angleArc) / (max)
     if (!this.props.clockwise) {
       startAngle = this.endAngle + 0.00001;
       endAngle = startAngle - angle - 0.00001;
@@ -138,135 +124,21 @@ class Knob extends React.Component {
     return devicePixelRatio / backingStoreRatio;
   };
 
-  coerceToStep = (v) => {
-    let val = !this.props.log
-    ? (~~(((v < 0) ? -0.5 : 0.5) + (v / this.props.step))) * this.props.step
-    : Math.pow(this.props.step, ~~(((Math.abs(v) < 1) ? -0.5 : 0.5) + (Math.log(v) / Math.log(this.props.step))));
-    val = Math.max(Math.min(val, this.props.max), this.props.min);
-    if (isNaN(val)) { val = 0; }
-    return Math.round(val * 1000) / 1000;
-  };
-
-  eventToValue = (e) => {
-    const bounds = this.canvasRef.getBoundingClientRect();
-    const x = e.clientX - bounds.left;
-    const y = e.clientY - bounds.top;
-    let a = Math.atan2(x - (this.w / 2), (this.w / 2) - y) - this.angleOffset;
-    if (!this.props.clockwise) {
-      a = this.angleArc - a - (2 * Math.PI);
-    }
-    if (this.angleArc !== Math.PI * 2 && (a < 0) && (a > -0.5)) {
-      a = 0;
-    } else if (a < 0) {
-      a += Math.PI * 2;
-    }
-    const val = !this.props.log
-    ? (a * (this.props.max - this.props.min) / this.angleArc) + this.props.min
-    : Math.pow(this.props.max / this.props.min, a / this.angleArc) * this.props.min;
-    return this.coerceToStep(val);
-  };
-
-  handleMouseDown = (e) => {
-    this.props.onChange(this.eventToValue(e));
-    document.addEventListener('mousemove', this.handleMouseMove);
-    document.addEventListener('mouseup', this.handleMouseUp);
-    document.addEventListener('keyup', this.handleEsc);
-  };
-
-  handleMouseMove = (e) => {
-    e.preventDefault();
-    this.props.onChange(this.eventToValue(e));
-  };
-
-  handleMouseUp = (e) => {
-    this.props.onChangeEnd(this.eventToValue(e));
-    document.removeEventListener('mousemove', this.handleMouseMove);
-    document.removeEventListener('mouseup', this.handleMouseUp);
-    document.removeEventListener('keyup', this.handleEsc);
-  };
-
-  handleTouchStart = (e) => {
-    e.preventDefault();
-    this.touchIndex = e.targetTouches.length - 1;
-    this.props.onChange(this.eventToValue(e.targetTouches[this.touchIndex]));
-    document.addEventListener('touchmove', this.handleTouchMove, { passive: false });
-    document.addEventListener('touchend', this.handleTouchEnd);
-    document.addEventListener('touchcancel', this.handleTouchEnd);
-  };
-
-  handleTouchMove = (e) => {
-    e.preventDefault();
-    this.props.onChange(this.eventToValue(e.targetTouches[this.touchIndex]));
-  };
-
-  handleTouchEnd = (e) => {
-    this.props.onChangeEnd(this.eventToValue(e));
-    document.removeEventListener('touchmove', this.handleTouchMove);
-    document.removeEventListener('touchend', this.handleTouchEnd);
-    document.removeEventListener('touchcancel', this.handleTouchEnd);
-  };
-
-  handleEsc = (e) => {
-    if (e.keyCode === 27) {
-      e.preventDefault();
-      this.handleMouseUp();
-    }
-  };
-
-  handleTextInput = (e) => {
-    const val = Math.max(Math.min(+e.target.value, this.props.max), this.props.min) || this.props.min;
-    this.props.onChange(val);
-  };
-
-  handleWheel = (e) => {
-    e.preventDefault();
-    if (e.deltaX > 0 || e.deltaY > 0) {
-      this.props.onChange(this.coerceToStep(
-        !this.props.log
-        ? this.props.value + this.props.step
-        : this.props.value * this.props.step
-      ));
-    } else if (e.deltaX < 0 || e.deltaY < 0) {
-      this.props.onChange(this.coerceToStep(
-        !this.props.log
-        ? this.props.value - this.props.step
-        : this.props.value / this.props.step
-      ));
-    }
-  };
-
-  handleArrowKey = (e) => {
-    if (e.keyCode === 37 || e.keyCode === 40) {
-      e.preventDefault();
-      this.props.onChange(this.coerceToStep(
-        !this.props.log
-        ? this.props.value - this.props.step
-        : this.props.value / this.props.step
-      ));
-    } else if (e.keyCode === 38 || e.keyCode === 39) {
-      e.preventDefault();
-      this.props.onChange(this.coerceToStep(
-        !this.props.log
-        ? this.props.value + this.props.step
-        : this.props.value * this.props.step
-      ));
-    }
-  };
-
   inputStyle = () => ({
     width: `${((this.w / 2) + 4) >> 0}px`,
     height: `${(this.w / 3) >> 0}px`,
     position: 'absolute',
     verticalAlign: 'middle',
-    marginTop: `${(this.w / 3) >> 0}px`,
-    marginLeft: `-${((this.w * 3 / 4) + 2) >> 0}px`,
+    marginTop: `${((this.w / 3) - 10) >> 0}px`,
+    marginLeft: `${((this.w / 4) + 2) >> 0}px`,
     border: 0,
     background: 'none',
     font: `${this.props.fontWeight} ${(this.w / this.digits) >> 0}px ${this.props.font}`,
     textAlign: 'center',
-    color: this.props.inputColor || this.props.fgColor,
+    color: this.props.inputColor || this.props.sColor,
     padding: '0px',
     WebkitAppearance: 'none',
+    top: "0px"
   });
 
   drawCanvas() {
@@ -276,7 +148,7 @@ class Knob extends React.Component {
     this.canvasRef.height = this.h * scale;
     ctx.scale(scale, scale);
     this.xy = this.w / 2; // coordinates of canvas center
-    this.lineWidth = this.xy * this.props.thickness;
+    this.lineWidth = Math.max(5, this.props.thickness * this.xy / 100);
     this.radius = this.xy - (this.lineWidth / 2);
     ctx.lineWidth = this.lineWidth;
     ctx.lineCap = this.props.lineCap;
@@ -293,16 +165,43 @@ class Knob extends React.Component {
     );
     ctx.stroke();
     // foreground arc
-    const a = this.getArcToValue(this.props.value);
+    const h = this.getArcToValue(this.props.hours, 24);
+    const m = this.getArcToValue(this.props.minutes, 60);
+    const s = this.getArcToValue(this.props.seconds, 60);
+
     ctx.beginPath();
-    ctx.strokeStyle = this.props.fgColor;
+    ctx.strokeStyle = this.props.hColor;
+    ctx.arc(
+      this.xy,
+      this.xy,
+      this.radius - this.lineWidth * 2,
+      h.startAngle,
+      h.endAngle,
+      h.acw
+    );
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = this.props.mColor;
+    ctx.arc(
+      this.xy,
+      this.xy,
+      this.radius - this.lineWidth,
+      m.startAngle,
+      m.endAngle,
+      m.acw
+    );
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = this.props.sColor;
     ctx.arc(
       this.xy,
       this.xy,
       this.radius,
-      a.startAngle,
-      a.endAngle,
-      a.acw
+      s.startAngle,
+      s.endAngle,
+      s.acw
     );
     ctx.stroke();
   }
@@ -310,23 +209,39 @@ class Knob extends React.Component {
   renderCenter = () => {
     const {
       displayCustom,
-      displayInput,
-      disableTextInput,
+      displayNumber,
       readOnly,
-      value,
     } = this.props;
 
-    if (displayInput) {
-      return (
-        <input
-          style={this.inputStyle()}
-          type="text"
-          value={value}
-          onChange={this.handleTextInput}
-          onKeyDown={this.handleArrowKey}
-          readOnly={readOnly || disableTextInput}
-        />
-      );
+    if (displayNumber) {
+      function chooseTimeDisplay() {
+        function stringify(e) {return e < 10 ? "0" + e : e + "" };
+        if(this.props.hours > 0) {
+          return (
+            <div style={this.inputStyle()}>
+              <p>{stringify(this.props.hours)}</p>
+              <p style={{fontSize: this.w / 10 + "px"}}>hours</p>
+            </div>
+          )
+        }
+        else if(this.props.minutes > 0) {
+          return (
+            <div style={this.inputStyle()}>
+              <p>{stringify(this.props.minutes)}</p>
+              <p style={{fontSize: this.w / 10 + "px"}}>minutes</p>
+            </div>
+          )
+        }
+        else {
+          return (
+            <div style={this.inputStyle()}>
+              <p>{stringify(this.props.seconds)}</p>
+              <p style={{fontSize: this.w / 10 + "px"}}>seconds</p>
+            </div>
+          )
+        }
+      }
+      return chooseTimeDisplay.call(this);
     } else if (displayCustom && typeof displayCustom === 'function') {
       return displayCustom();
     }
@@ -337,8 +252,6 @@ class Knob extends React.Component {
     const {
       canvasClassName,
       className,
-      disableMouseWheel,
-      readOnly,
       title,
       value,
     } = this.props;
@@ -346,14 +259,12 @@ class Knob extends React.Component {
     return (
       <div
         className={className}
-        style={{ width: this.w, height: this.h, display: 'inline-block' }}
-        onWheel={readOnly || disableMouseWheel ? null : this.handleWheel}
+        style={{ width: this.w, height: this.h, display: 'inline-block', flexShrink: 0 }}
       >
         <canvas
           ref={(ref) => { this.canvasRef = ref; }}
           className={canvasClassName}
           style={{ width: '100%', height: '100%' }}
-          onMouseDown={readOnly ? null : this.handleMouseDown}
           title={title ? `${title}: ${value}` : value}
         />
         {this.renderCenter()}

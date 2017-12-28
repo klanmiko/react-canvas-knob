@@ -4,25 +4,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _redboxReact2 = require('redbox-react');
-
-var _redboxReact3 = _interopRequireDefault(_redboxReact2);
-
-var _reactTransformCatchErrors3 = require('react-transform-catch-errors');
-
-var _reactTransformCatchErrors4 = _interopRequireDefault(_reactTransformCatchErrors3);
-
-var _react2 = require('react');
-
-var _react3 = _interopRequireDefault(_react2);
-
-var _reactTransformHmr3 = require('react-transform-hmr');
-
-var _reactTransformHmr4 = _interopRequireDefault(_reactTransformHmr3);
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _class, _temp;
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
 
 var _propTypes = require('prop-types');
 
@@ -36,33 +22,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _components = {
-  Knob: {
-    displayName: 'Knob'
-  }
-};
-
-var _reactTransformHmr2 = (0, _reactTransformHmr4.default)({
-  filename: 'Knob.js',
-  components: _components,
-  locals: [module],
-  imports: [_react3.default]
-});
-
-var _reactTransformCatchErrors2 = (0, _reactTransformCatchErrors4.default)({
-  filename: 'Knob.js',
-  components: _components,
-  locals: [],
-  imports: [_react3.default, _redboxReact3.default]
-});
-
-function _wrapComponent(id) {
-  return function (Component) {
-    return _reactTransformHmr2(_reactTransformCatchErrors2(Component, id), id);
-  };
-}
-
-var Knob = _wrapComponent('Knob')((_temp = _class = function (_React$Component) {
+var Knob = function (_React$Component) {
   _inherits(Knob, _React$Component);
 
   function Knob(props) {
@@ -70,172 +30,20 @@ var Knob = _wrapComponent('Knob')((_temp = _class = function (_React$Component) 
 
     var _this = _possibleConstructorReturn(this, (Knob.__proto__ || Object.getPrototypeOf(Knob)).call(this, props));
 
-    _this.getArcToValue = function (v) {
-      var startAngle = void 0;
-      var endAngle = void 0;
-      var angle = !_this.props.log ? (v - _this.props.min) * _this.angleArc / (_this.props.max - _this.props.min) : Math.log(Math.pow(v / _this.props.min, _this.angleArc)) / Math.log(_this.props.max / _this.props.min);
-      if (!_this.props.clockwise) {
-        startAngle = _this.endAngle + 0.00001;
-        endAngle = startAngle - angle - 0.00001;
-      } else {
-        startAngle = _this.startAngle - 0.00001;
-        endAngle = startAngle + angle + 0.00001;
-      }
-      if (_this.props.cursor) {
-        startAngle = endAngle - _this.cursorExt;
-        endAngle += _this.cursorExt;
-      }
-      return {
-        startAngle: startAngle,
-        endAngle: endAngle,
-        acw: !_this.props.clockwise && !_this.props.cursor
-      };
+    _this.getArcToValue = function () {
+      return _this.__getArcToValue__REACT_HOT_LOADER__.apply(_this, arguments);
     };
 
-    _this.getCanvasScale = function (ctx) {
-      var devicePixelRatio = window.devicePixelRatio || window.screen.deviceXDPI / window.screen.logicalXDPI || // IE10
-      1;
-      var backingStoreRatio = ctx.webkitBackingStorePixelRatio || 1;
-      return devicePixelRatio / backingStoreRatio;
-    };
-
-    _this.coerceToStep = function (v) {
-      var val = !_this.props.log ? ~~((v < 0 ? -0.5 : 0.5) + v / _this.props.step) * _this.props.step : Math.pow(_this.props.step, ~~((Math.abs(v) < 1 ? -0.5 : 0.5) + Math.log(v) / Math.log(_this.props.step)));
-      val = Math.max(Math.min(val, _this.props.max), _this.props.min);
-      if (isNaN(val)) {
-        val = 0;
-      }
-      return Math.round(val * 1000) / 1000;
-    };
-
-    _this.eventToValue = function (e) {
-      var bounds = _this.canvasRef.getBoundingClientRect();
-      var x = e.clientX - bounds.left;
-      var y = e.clientY - bounds.top;
-      var a = Math.atan2(x - _this.w / 2, _this.w / 2 - y) - _this.angleOffset;
-      if (!_this.props.clockwise) {
-        a = _this.angleArc - a - 2 * Math.PI;
-      }
-      if (_this.angleArc !== Math.PI * 2 && a < 0 && a > -0.5) {
-        a = 0;
-      } else if (a < 0) {
-        a += Math.PI * 2;
-      }
-      var val = !_this.props.log ? a * (_this.props.max - _this.props.min) / _this.angleArc + _this.props.min : Math.pow(_this.props.max / _this.props.min, a / _this.angleArc) * _this.props.min;
-      return _this.coerceToStep(val);
-    };
-
-    _this.handleMouseDown = function (e) {
-      _this.props.onChange(_this.eventToValue(e));
-      document.addEventListener('mousemove', _this.handleMouseMove);
-      document.addEventListener('mouseup', _this.handleMouseUp);
-      document.addEventListener('keyup', _this.handleEsc);
-    };
-
-    _this.handleMouseMove = function (e) {
-      e.preventDefault();
-      _this.props.onChange(_this.eventToValue(e));
-    };
-
-    _this.handleMouseUp = function (e) {
-      _this.props.onChangeEnd(_this.eventToValue(e));
-      document.removeEventListener('mousemove', _this.handleMouseMove);
-      document.removeEventListener('mouseup', _this.handleMouseUp);
-      document.removeEventListener('keyup', _this.handleEsc);
-    };
-
-    _this.handleTouchStart = function (e) {
-      e.preventDefault();
-      _this.touchIndex = e.targetTouches.length - 1;
-      _this.props.onChange(_this.eventToValue(e.targetTouches[_this.touchIndex]));
-      document.addEventListener('touchmove', _this.handleTouchMove, { passive: false });
-      document.addEventListener('touchend', _this.handleTouchEnd);
-      document.addEventListener('touchcancel', _this.handleTouchEnd);
-    };
-
-    _this.handleTouchMove = function (e) {
-      e.preventDefault();
-      _this.props.onChange(_this.eventToValue(e.targetTouches[_this.touchIndex]));
-    };
-
-    _this.handleTouchEnd = function (e) {
-      _this.props.onChangeEnd(_this.eventToValue(e));
-      document.removeEventListener('touchmove', _this.handleTouchMove);
-      document.removeEventListener('touchend', _this.handleTouchEnd);
-      document.removeEventListener('touchcancel', _this.handleTouchEnd);
-    };
-
-    _this.handleEsc = function (e) {
-      if (e.keyCode === 27) {
-        e.preventDefault();
-        _this.handleMouseUp();
-      }
-    };
-
-    _this.handleTextInput = function (e) {
-      var val = Math.max(Math.min(+e.target.value, _this.props.max), _this.props.min) || _this.props.min;
-      _this.props.onChange(val);
-    };
-
-    _this.handleWheel = function (e) {
-      e.preventDefault();
-      if (e.deltaX > 0 || e.deltaY > 0) {
-        _this.props.onChange(_this.coerceToStep(!_this.props.log ? _this.props.value + _this.props.step : _this.props.value * _this.props.step));
-      } else if (e.deltaX < 0 || e.deltaY < 0) {
-        _this.props.onChange(_this.coerceToStep(!_this.props.log ? _this.props.value - _this.props.step : _this.props.value / _this.props.step));
-      }
-    };
-
-    _this.handleArrowKey = function (e) {
-      if (e.keyCode === 37 || e.keyCode === 40) {
-        e.preventDefault();
-        _this.props.onChange(_this.coerceToStep(!_this.props.log ? _this.props.value - _this.props.step : _this.props.value / _this.props.step));
-      } else if (e.keyCode === 38 || e.keyCode === 39) {
-        e.preventDefault();
-        _this.props.onChange(_this.coerceToStep(!_this.props.log ? _this.props.value + _this.props.step : _this.props.value * _this.props.step));
-      }
+    _this.getCanvasScale = function () {
+      return _this.__getCanvasScale__REACT_HOT_LOADER__.apply(_this, arguments);
     };
 
     _this.inputStyle = function () {
-      return {
-        width: (_this.w / 2 + 4 >> 0) + 'px',
-        height: (_this.w / 3 >> 0) + 'px',
-        position: 'absolute',
-        verticalAlign: 'middle',
-        marginTop: (_this.w / 3 >> 0) + 'px',
-        marginLeft: '-' + (_this.w * 3 / 4 + 2 >> 0) + 'px',
-        border: 0,
-        background: 'none',
-        font: _this.props.fontWeight + ' ' + (_this.w / _this.digits >> 0) + 'px ' + _this.props.font,
-        textAlign: 'center',
-        color: _this.props.inputColor || _this.props.fgColor,
-        padding: '0px',
-        WebkitAppearance: 'none'
-      };
+      return _this.__inputStyle__REACT_HOT_LOADER__.apply(_this, arguments);
     };
 
     _this.renderCenter = function () {
-      var _this$props = _this.props,
-          displayCustom = _this$props.displayCustom,
-          displayInput = _this$props.displayInput,
-          disableTextInput = _this$props.disableTextInput,
-          readOnly = _this$props.readOnly,
-          value = _this$props.value;
-
-
-      if (displayInput) {
-        return _react3.default.createElement('input', {
-          style: _this.inputStyle(),
-          type: 'text',
-          value: value,
-          onChange: _this.handleTextInput,
-          onKeyDown: _this.handleArrowKey,
-          readOnly: readOnly || disableTextInput
-        });
-      } else if (displayCustom && typeof displayCustom === 'function') {
-        return displayCustom();
-      }
-      return null;
+      return _this.__renderCenter__REACT_HOT_LOADER__.apply(_this, arguments);
     };
 
     _this.w = _this.props.width || 200;
@@ -245,11 +53,31 @@ var Knob = _wrapComponent('Knob')((_temp = _class = function (_React$Component) 
     _this.angleOffset = _this.props.angleOffset * Math.PI / 180;
     _this.startAngle = 1.5 * Math.PI + _this.angleOffset;
     _this.endAngle = 1.5 * Math.PI + _this.angleOffset + _this.angleArc;
-    _this.digits = Math.max(String(Math.abs(_this.props.min)).length, String(Math.abs(_this.props.max)).length, 2) + 2;
+    _this.digits = 4;
     return _this;
   }
 
   _createClass(Knob, [{
+    key: '__renderCenter__REACT_HOT_LOADER__',
+    value: function __renderCenter__REACT_HOT_LOADER__() {
+      return this.__renderCenter__REACT_HOT_LOADER__.apply(this, arguments);
+    }
+  }, {
+    key: '__inputStyle__REACT_HOT_LOADER__',
+    value: function __inputStyle__REACT_HOT_LOADER__() {
+      return this.__inputStyle__REACT_HOT_LOADER__.apply(this, arguments);
+    }
+  }, {
+    key: '__getCanvasScale__REACT_HOT_LOADER__',
+    value: function __getCanvasScale__REACT_HOT_LOADER__() {
+      return this.__getCanvasScale__REACT_HOT_LOADER__.apply(this, arguments);
+    }
+  }, {
+    key: '__getArcToValue__REACT_HOT_LOADER__',
+    value: function __getArcToValue__REACT_HOT_LOADER__() {
+      return this.__getArcToValue__REACT_HOT_LOADER__.apply(this, arguments);
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.drawCanvas();
@@ -277,9 +105,60 @@ var Knob = _wrapComponent('Knob')((_temp = _class = function (_React$Component) 
     value: function componentWillUnmount() {
       this.canvasRef.removeEventListener('touchstart', this.handleTouchStart);
     }
+  }, {
+    key: '__getArcToValue__REACT_HOT_LOADER__',
+
 
     // Calculate ratio to scale canvas to avoid blurriness on HiDPI devices
-
+    value: function __getArcToValue__REACT_HOT_LOADER__(v, max) {
+      var startAngle = void 0;
+      var endAngle = void 0;
+      var angle = v * this.angleArc / max;
+      if (!this.props.clockwise) {
+        startAngle = this.endAngle + 0.00001;
+        endAngle = startAngle - angle - 0.00001;
+      } else {
+        startAngle = this.startAngle - 0.00001;
+        endAngle = startAngle + angle + 0.00001;
+      }
+      if (this.props.cursor) {
+        startAngle = endAngle - this.cursorExt;
+        endAngle += this.cursorExt;
+      }
+      return {
+        startAngle: startAngle,
+        endAngle: endAngle,
+        acw: !this.props.clockwise && !this.props.cursor
+      };
+    }
+  }, {
+    key: '__getCanvasScale__REACT_HOT_LOADER__',
+    value: function __getCanvasScale__REACT_HOT_LOADER__(ctx) {
+      var devicePixelRatio = window.devicePixelRatio || window.screen.deviceXDPI / window.screen.logicalXDPI || // IE10
+      1;
+      var backingStoreRatio = ctx.webkitBackingStorePixelRatio || 1;
+      return devicePixelRatio / backingStoreRatio;
+    }
+  }, {
+    key: '__inputStyle__REACT_HOT_LOADER__',
+    value: function __inputStyle__REACT_HOT_LOADER__() {
+      return {
+        width: (this.w / 2 + 4 >> 0) + 'px',
+        height: (this.w / 3 >> 0) + 'px',
+        position: 'absolute',
+        verticalAlign: 'middle',
+        marginTop: (this.w / 3 - 10 >> 0) + 'px',
+        marginLeft: (this.w / 4 + 2 >> 0) + 'px',
+        border: 0,
+        background: 'none',
+        font: this.props.fontWeight + ' ' + (this.w / this.digits >> 0) + 'px ' + this.props.font,
+        textAlign: 'center',
+        color: this.props.inputColor || this.props.sColor,
+        padding: '0px',
+        WebkitAppearance: 'none',
+        top: "0px"
+      };
+    }
   }, {
     key: 'drawCanvas',
     value: function drawCanvas() {
@@ -289,7 +168,7 @@ var Knob = _wrapComponent('Knob')((_temp = _class = function (_React$Component) 
       this.canvasRef.height = this.h * scale;
       ctx.scale(scale, scale);
       this.xy = this.w / 2; // coordinates of canvas center
-      this.lineWidth = this.xy * this.props.thickness;
+      this.lineWidth = Math.max(5, this.props.thickness * this.xy / 100);
       this.radius = this.xy - this.lineWidth / 2;
       ctx.lineWidth = this.lineWidth;
       ctx.lineCap = this.props.lineCap;
@@ -299,40 +178,117 @@ var Knob = _wrapComponent('Knob')((_temp = _class = function (_React$Component) 
       ctx.arc(this.xy, this.xy, this.radius, this.endAngle - 0.00001, this.startAngle + 0.00001, true);
       ctx.stroke();
       // foreground arc
-      var a = this.getArcToValue(this.props.value);
+      var h = this.getArcToValue(this.props.hours, 24);
+      var m = this.getArcToValue(this.props.minutes, 60);
+      var s = this.getArcToValue(this.props.seconds, 60);
+
       ctx.beginPath();
-      ctx.strokeStyle = this.props.fgColor;
-      ctx.arc(this.xy, this.xy, this.radius, a.startAngle, a.endAngle, a.acw);
+      ctx.strokeStyle = this.props.hColor;
+      ctx.arc(this.xy, this.xy, this.radius - this.lineWidth * 2, h.startAngle, h.endAngle, h.acw);
       ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = this.props.mColor;
+      ctx.arc(this.xy, this.xy, this.radius - this.lineWidth, m.startAngle, m.endAngle, m.acw);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = this.props.sColor;
+      ctx.arc(this.xy, this.xy, this.radius, s.startAngle, s.endAngle, s.acw);
+      ctx.stroke();
+    }
+  }, {
+    key: '__renderCenter__REACT_HOT_LOADER__',
+    value: function __renderCenter__REACT_HOT_LOADER__() {
+      var _props = this.props,
+          displayCustom = _props.displayCustom,
+          displayNumber = _props.displayNumber,
+          readOnly = _props.readOnly;
+
+
+      if (displayNumber) {
+        var chooseTimeDisplay = function chooseTimeDisplay() {
+          function stringify(e) {
+            return e < 10 ? "0" + e : e + "";
+          };
+          if (this.props.hours > 0) {
+            return _react2.default.createElement(
+              'div',
+              { style: this.inputStyle() },
+              _react2.default.createElement(
+                'p',
+                null,
+                stringify(this.props.hours)
+              ),
+              _react2.default.createElement(
+                'p',
+                { style: { fontSize: this.w / 10 + "px" } },
+                'hours'
+              )
+            );
+          } else if (this.props.minutes > 0) {
+            return _react2.default.createElement(
+              'div',
+              { style: this.inputStyle() },
+              _react2.default.createElement(
+                'p',
+                null,
+                stringify(this.props.minutes)
+              ),
+              _react2.default.createElement(
+                'p',
+                { style: { fontSize: this.w / 10 + "px" } },
+                'minutes'
+              )
+            );
+          } else {
+            return _react2.default.createElement(
+              'div',
+              { style: this.inputStyle() },
+              _react2.default.createElement(
+                'p',
+                null,
+                stringify(this.props.seconds)
+              ),
+              _react2.default.createElement(
+                'p',
+                { style: { fontSize: this.w / 10 + "px" } },
+                'seconds'
+              )
+            );
+          }
+        };
+
+        return chooseTimeDisplay.call(this);
+      } else if (displayCustom && typeof displayCustom === 'function') {
+        return displayCustom();
+      }
+      return null;
     }
   }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
-      var _props = this.props,
-          canvasClassName = _props.canvasClassName,
-          className = _props.className,
-          disableMouseWheel = _props.disableMouseWheel,
-          readOnly = _props.readOnly,
-          title = _props.title,
-          value = _props.value;
+      var _props2 = this.props,
+          canvasClassName = _props2.canvasClassName,
+          className = _props2.className,
+          title = _props2.title,
+          value = _props2.value;
 
 
-      return _react3.default.createElement(
+      return _react2.default.createElement(
         'div',
         {
           className: className,
-          style: { width: this.w, height: this.h, display: 'inline-block' },
-          onWheel: readOnly || disableMouseWheel ? null : this.handleWheel
+          style: { width: this.w, height: this.h, display: 'inline-block' }
         },
-        _react3.default.createElement('canvas', {
+        _react2.default.createElement('canvas', {
           ref: function ref(_ref) {
             _this2.canvasRef = _ref;
           },
           className: canvasClassName,
           style: { width: '100%', height: '100%' },
-          onMouseDown: readOnly ? null : this.handleMouseDown,
           title: title ? title + ': ' + value : value
         }),
         this.renderCenter()
@@ -341,62 +297,70 @@ var Knob = _wrapComponent('Knob')((_temp = _class = function (_React$Component) 
   }]);
 
   return Knob;
-}(_react3.default.Component), _class.propTypes = {
-  value: _propTypes2.default.number.isRequired,
-  onChange: _propTypes2.default.func.isRequired,
-  onChangeEnd: _propTypes2.default.func,
-  min: _propTypes2.default.number,
-  max: _propTypes2.default.number,
-  step: _propTypes2.default.number,
-  log: _propTypes2.default.bool,
+}(_react2.default.Component);
+
+Knob.propTypes = {
+  minutes: _propTypes2.default.number.isRequired,
+  hours: _propTypes2.default.number.isRequired,
+  seconds: _propTypes2.default.number.isRequired,
   width: _propTypes2.default.number,
   height: _propTypes2.default.number,
   thickness: _propTypes2.default.number,
   lineCap: _propTypes2.default.oneOf(['butt', 'round']),
   bgColor: _propTypes2.default.string,
-  fgColor: _propTypes2.default.string,
+  mColor: _propTypes2.default.string,
+  sColor: _propTypes2.default.string,
+  hColor: _propTypes2.default.string,
   inputColor: _propTypes2.default.string,
   font: _propTypes2.default.string,
   fontWeight: _propTypes2.default.string,
   clockwise: _propTypes2.default.bool,
   cursor: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.bool]),
   stopper: _propTypes2.default.bool,
-  readOnly: _propTypes2.default.bool,
-  disableTextInput: _propTypes2.default.bool,
-  displayInput: _propTypes2.default.bool,
   displayCustom: _propTypes2.default.func,
+  displayNumber: _propTypes2.default.bool.isRequired,
   angleArc: _propTypes2.default.number,
   angleOffset: _propTypes2.default.number,
-  disableMouseWheel: _propTypes2.default.bool,
   title: _propTypes2.default.string,
   className: _propTypes2.default.string,
   canvasClassName: _propTypes2.default.string
-}, _class.defaultProps = {
-  onChangeEnd: function onChangeEnd() {},
-  min: 0,
-  max: 100,
-  step: 1,
-  log: false,
+};
+Knob.defaultProps = {
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+  thickness: 0.35,
   width: 200,
   height: 200,
-  thickness: 0.35,
   lineCap: 'butt',
   bgColor: '#EEE',
-  fgColor: '#EA2',
+  sColor: '#EA2',
+  mColor: '#EA2',
+  hColor: '#EA2',
   inputColor: '',
   font: 'Arial',
   fontWeight: 'bold',
   clockwise: true,
   cursor: false,
   stopper: true,
-  readOnly: false,
-  disableTextInput: false,
-  displayInput: true,
+  displayNumber: true,
   angleArc: 360,
   angleOffset: 0,
-  disableMouseWheel: false,
   className: null,
   canvasClassName: null
-}, _temp));
+};
+var _default = Knob;
+exports.default = _default;
+;
 
-exports.default = Knob;
+var _temp = function () {
+  if (typeof __REACT_HOT_LOADER__ === 'undefined') {
+    return;
+  }
+
+  __REACT_HOT_LOADER__.register(Knob, 'Knob', 'Knob.js');
+
+  __REACT_HOT_LOADER__.register(_default, 'default', 'Knob.js');
+}();
+
+;

@@ -32,7 +32,7 @@ export default {
     new HtmlWebpackPlugin({
       inject: false,
       template: HtmlWebpackTemplate,
-      title: 'react-canvas-knob',
+      title: 'react-time-knob',
       appMountId: 'root',
       mobile: true,
     }),
