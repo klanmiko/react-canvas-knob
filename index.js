@@ -281,7 +281,7 @@ var Knob = function (_React$Component) {
         'div',
         {
           className: className,
-          style: { width: this.w, height: this.h, display: 'inline-block' }
+          style: { width: this.w, height: this.h, display: 'inline-block', flexShrink: 0 }
         },
         _react2.default.createElement('canvas', {
           ref: function ref(_ref) {
@@ -316,7 +316,6 @@ Knob.propTypes = {
   fontWeight: _propTypes2.default.string,
   clockwise: _propTypes2.default.bool,
   cursor: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.bool]),
-  stopper: _propTypes2.default.bool,
   displayCustom: _propTypes2.default.func,
   displayNumber: _propTypes2.default.bool.isRequired,
   angleArc: _propTypes2.default.number,
@@ -342,7 +341,6 @@ Knob.defaultProps = {
   fontWeight: 'bold',
   clockwise: true,
   cursor: false,
-  stopper: true,
   displayNumber: true,
   angleArc: 360,
   angleOffset: 0,
