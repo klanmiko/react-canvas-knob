@@ -81,9 +81,6 @@ var Knob = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.drawCanvas();
-      if (!this.props.readOnly) {
-        this.canvasRef.addEventListener('touchstart', this.handleTouchStart, { passive: false });
-      }
     }
   }, {
     key: 'componentWillReceiveProps',
@@ -99,11 +96,6 @@ var Knob = function (_React$Component) {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
       this.drawCanvas();
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      this.canvasRef.removeEventListener('touchstart', this.handleTouchStart);
     }
   }, {
     key: '__getArcToValue__REACT_HOT_LOADER__',

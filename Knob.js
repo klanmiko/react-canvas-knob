@@ -69,9 +69,6 @@ class Knob extends React.Component {
 
   componentDidMount() {
     this.drawCanvas();
-    if (!this.props.readOnly) {
-      this.canvasRef.addEventListener('touchstart', this.handleTouchStart, { passive: false });
-    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -85,10 +82,6 @@ class Knob extends React.Component {
 
   componentDidUpdate() {
     this.drawCanvas();
-  }
-
-  componentWillUnmount() {
-    this.canvasRef.removeEventListener('touchstart', this.handleTouchStart);
   }
 
   getArcToValue = (v, max) => {
