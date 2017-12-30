@@ -273,7 +273,7 @@ var Knob = function (_React$Component) {
         'div',
         {
           className: className,
-          style: { width: this.w, height: this.h, display: 'inline-block', flexShrink: 0 }
+          style: { position: "relative", width: this.w, height: this.h, display: 'inline-block', flexShrink: 0 }
         },
         _react2.default.createElement('canvas', {
           ref: function ref(_ref) {

@@ -250,7 +250,7 @@ class Knob extends React.Component {
     return (
       <div
         className={className}
-        style={{ width: this.w, height: this.h, display: 'inline-block', flexShrink: 0 }}
+        style={{ position: "relative", width: this.w, height: this.h, display: 'inline-block', flexShrink: 0 }}
       >
         <canvas
           ref={(ref) => { this.canvasRef = ref; }}
