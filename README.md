@@ -6,7 +6,8 @@
 `npm install react-time-knob --save`
 
 ## Example usage
-
+### Demo
+[This component used as a countdown timer](https://klanmiko.github.io/react-time-knob)
 ```js
 import React from 'react';
 import Knob from 'react-time-knob';
